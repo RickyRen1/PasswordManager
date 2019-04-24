@@ -2,6 +2,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.custom.CLabel;
 
 import java.io.File;
@@ -13,13 +15,20 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 
 public class AddPassword {
+	private static final int APPLICATION_INDEX = 0;
+	private static final int USERNAME_INDEX = 1;
+	private static final int PASSWORD_INDEX = 2;
+	private static final String DELINEATOR = " ";
 
 	protected Object result;
 	protected Shell shell;
+	
+	private String passwordFileName;
+	private Table passwordTable;
+	
 	private Text applicationInput;
 	private Text usernameInput;
 	private Text passwordInput;
-	private String passwordFileName;
 
 	/**
 	 * Create the dialog.
@@ -27,13 +36,16 @@ public class AddPassword {
 	 * @param style
 	 */
 
+	AddPassword(String passwordFileName, Table passwordTable) {
+		this.passwordFileName = passwordFileName;
+		this.passwordTable = passwordTable;
+	}
 	/**
 	 * Open the dialog.
 	 * @return the result
 	 * @wbp.parser.entryPoint
 	 */
 	public Object open(String passwordFileName) {
-		this.passwordFileName = passwordFileName;
 		createContents();
 		shell.open();
 		shell.layout();
@@ -51,7 +63,7 @@ public class AddPassword {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(200, 275);
+		shell.setSize(200, 285);
 		shell.setText("Add Password");
 		
 		CLabel lblApplication = new CLabel(shell, SWT.NONE);
@@ -72,7 +84,7 @@ public class AddPassword {
 		lblPassword.setBounds(10, 128, 69, 25);
 		lblPassword.setText("Password");
 		
-		passwordInput = new Text(shell, SWT.BORDER);
+		passwordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		passwordInput.setBounds(10, 159, 168, 22);
 		
 		Button btnSave = new Button(shell, SWT.NONE);
@@ -90,11 +102,15 @@ public class AddPassword {
 							FileWriter fw = new FileWriter(passwordFileName, true);
 							fw.write("\n");
 							fw.write(application);
-							fw.write(" ");
+							fw.write(DELINEATOR);
 							fw.write(username);
-							fw.write(" ");
+							fw.write(DELINEATOR);
 							fw.write(password);
 							fw.close();
+							TableItem tableItem = new TableItem(passwordTable, SWT.NONE);
+							tableItem.setText(APPLICATION_INDEX, application);
+							tableItem.setText(USERNAME_INDEX, username);
+							tableItem.setText(PASSWORD_INDEX, password);
 							System.out.println("Information Saved");
 						}
 					}

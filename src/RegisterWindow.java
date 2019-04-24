@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class RegisterWindow {
 	private static final String USER_FILE_NAME = "userFile.txt";
+	private static final String DELINEATOR = " ";
 
 	protected Shell shell;
 	private Text usernameInput;
@@ -61,14 +62,14 @@ public class RegisterWindow {
 		lblPassword.setBounds(10, 69, 69, 25);
 		lblPassword.setText("Password");
 		
-		passwordInput = new Text(shell, SWT.BORDER);
+		passwordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		passwordInput.setBounds(10, 100, 234, 22);
 		
 		CLabel lblConfirmPassword = new CLabel(shell, SWT.NONE);
 		lblConfirmPassword.setBounds(10, 128, 113, 25);
 		lblConfirmPassword.setText("Confirm Password");
 		
-		confirmPasswordInput = new Text(shell, SWT.BORDER);
+		confirmPasswordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		confirmPasswordInput.setBounds(10, 159, 234, 22);
 		
 		
@@ -85,19 +86,19 @@ public class RegisterWindow {
 					Boolean duplicateUsername = false;
 					if(!(username.isEmpty()) && !(password.isEmpty())) {
 						while(sc.hasNextLine()) { //make sure username doesn't already exist
-							String[] userPass = sc.nextLine().split(" ");
+							String[] userPass = sc.nextLine().split(DELINEATOR);
 							if((userPass[0].equals(usernameInput.getText()))) {
 								duplicateUsername = true;
 							}
 						}
 						if(!duplicateUsername && 
-								!username.contains(" ") && //user can't have space
-								!password.contains(" ") && //password can't have space
+								!username.contains(DELINEATOR) && //user can't have space
+								!password.contains(DELINEATOR) && //password can't have space
 								confirmPassword.equals(password)) { //password and confirm password are the same
 							FileWriter fw = new FileWriter(USER_FILE_NAME, true);
 							fw.write("\n");
 							fw.write(username);
-							fw.write(" ");
+							fw.write(DELINEATOR);
 							fw.write(password);
 							fw.close();
 							System.out.println("Register Successful");

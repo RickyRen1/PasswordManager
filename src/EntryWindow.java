@@ -102,7 +102,7 @@ public class EntryWindow {
 		usernameInput = new Text(shell, SWT.BORDER);
 		usernameInput.setBounds(10, 41, 234, 22);
 		
-		passwordInput = new Text(shell, SWT.BORDER);
+		passwordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		passwordInput.addListener(SWT.Traverse, new Listener() {
 			public void handleEvent(Event e) {
 				if(e.detail == SWT.TRAVERSE_RETURN) {
