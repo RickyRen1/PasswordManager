@@ -9,6 +9,7 @@ import java.util.Scanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
 
 public class EntryWindow {
 
@@ -17,6 +18,7 @@ public class EntryWindow {
 	protected Shell shell;
 	private Text usernameInput;
 	private Text passwordInput;
+	private Text lblLoginError;
 
 	/**
 	 * Launch the application.
@@ -81,6 +83,7 @@ public class EntryWindow {
 			}
 			else {
 				System.out.println("Login Fail");
+				lblLoginError.setVisible(true);
 			}
 		}
 		catch(FileNotFoundException eLogin) {
@@ -145,6 +148,12 @@ public class EntryWindow {
 		});
 		btnRegister.setBounds(10, 128, 76, 24);
 		btnRegister.setText("Register");
+		
+		lblLoginError = new Text(shell, SWT.NONE);
+		lblLoginError.setEditable(false);
+		lblLoginError.setVisible(false);
+		lblLoginError.setBounds(10, 158, 182, 15);
+		lblLoginError.setText("Incorrect username or password");
 
 	}
 }
