@@ -9,7 +9,6 @@ import java.util.Scanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Label;
 
 public class EntryWindow {
 

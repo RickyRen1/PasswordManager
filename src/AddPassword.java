@@ -18,7 +18,9 @@ public class AddPassword {
 	private static final int APPLICATION_INDEX = 0;
 	private static final int USERNAME_INDEX = 1;
 	private static final int PASSWORD_INDEX = 2;
+	private static final int STAR_INDEX = 3;
 	private static final String DELINEATOR = " ";
+	private static final String HIDDEN_TEXT = "******";
 
 	protected Object result;
 	protected Shell shell;
@@ -29,6 +31,7 @@ public class AddPassword {
 	private Text applicationInput;
 	private Text usernameInput;
 	private Text passwordInput;
+	private Text txtSpacesAreNot;
 
 	/**
 	 * Create the dialog.
@@ -56,6 +59,44 @@ public class AddPassword {
 			}
 		}
 		return result;
+	}
+	
+	private void addPasswordLogic() {
+		System.out.println(passwordFileName);
+		File passwordFile = new File(passwordFileName);
+		String application = applicationInput.getText();
+		String username = usernameInput.getText();
+		String password = passwordInput.getText();
+		try {
+			passwordFile.createNewFile();
+			if(!(application.isEmpty()) && !(username.isEmpty()) && !(password.isEmpty())) {
+				if(!(application.contains(" ")) && !(username.contains(" ")) && !(password.contains(" "))) {
+					FileWriter fw = new FileWriter(passwordFileName, true);
+					fw.write("\n");
+					fw.write(application);
+					fw.write(DELINEATOR);
+					fw.write(username);
+					fw.write(DELINEATOR);
+					fw.write(password);
+					fw.close();
+					TableItem tableItem = new TableItem(passwordTable, SWT.NONE);
+					tableItem.setText(APPLICATION_INDEX, application);
+					tableItem.setText(USERNAME_INDEX, username);
+					tableItem.setText(PASSWORD_INDEX, password);
+					tableItem.setText(STAR_INDEX, HIDDEN_TEXT);
+					System.out.println("Information Saved");
+					shell.close();
+				} else {
+					txtSpacesAreNot.setVisible(true);
+				}
+			}
+		}
+		catch(FileNotFoundException ePasswordFile) {
+			ePasswordFile.printStackTrace();
+		}
+		catch(IOException ePassworldFileIO) {
+			ePassworldFileIO.printStackTrace();
+		}
 	}
 
 	/**
@@ -85,43 +126,20 @@ public class AddPassword {
 		lblPassword.setText("Password");
 		
 		passwordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
+		passwordInput.addListener(SWT.Traverse, new Listener() {
+			public void handleEvent(Event e) {
+				if(e.detail == SWT.TRAVERSE_RETURN) {
+					addPasswordLogic();
+					shell.close();
+				}
+			}
+		});
 		passwordInput.setBounds(10, 159, 168, 22);
 		
 		Button btnSave = new Button(shell, SWT.NONE);
 		btnSave.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				System.out.println(passwordFileName);
-				File passwordFile = new File(passwordFileName);
-				String application = applicationInput.getText();
-				String username = usernameInput.getText();
-				String password = passwordInput.getText();
-				try {
-					passwordFile.createNewFile();
-					if(!(application.isEmpty()) && !(username.isEmpty()) && !(password.isEmpty())) {
-						if(!(application.contains(" ")) && !(username.contains(" ")) && !(password.contains(" "))) {
-							FileWriter fw = new FileWriter(passwordFileName, true);
-							fw.write("\n");
-							fw.write(application);
-							fw.write(DELINEATOR);
-							fw.write(username);
-							fw.write(DELINEATOR);
-							fw.write(password);
-							fw.close();
-							TableItem tableItem = new TableItem(passwordTable, SWT.NONE);
-							tableItem.setText(APPLICATION_INDEX, application);
-							tableItem.setText(USERNAME_INDEX, username);
-							tableItem.setText(PASSWORD_INDEX, password);
-							System.out.println("Information Saved");
-						}
-					}
-				}
-				catch(FileNotFoundException ePasswordFile) {
-					ePasswordFile.printStackTrace();
-				}
-				catch(IOException ePassworldFileIO) {
-					ePassworldFileIO.printStackTrace();
-				}
-				shell.close();
+				addPasswordLogic();
 			}
 		});
 		btnSave.setBounds(102, 187, 76, 24);
@@ -135,6 +153,12 @@ public class AddPassword {
 		});
 		btnCancel.setBounds(102, 217, 76, 24);
 		btnCancel.setText("Cancel");
+		
+		txtSpacesAreNot = new Text(shell, SWT.BORDER | SWT.WRAP);
+		txtSpacesAreNot.setEditable(false);
+		txtSpacesAreNot.setVisible(false);
+		txtSpacesAreNot.setText("Spaces are not allowed");
+		txtSpacesAreNot.setBounds(10, 187, 76, 54);
 
 	}
 }

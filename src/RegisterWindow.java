@@ -21,6 +21,7 @@ public class RegisterWindow {
 	private Text usernameInput;
 	private Text passwordInput;
 	private Text confirmPasswordInput;
+	private Text txtErrorCheckIf;
 
 	/**
 	 * Launch the application.
@@ -41,6 +42,52 @@ public class RegisterWindow {
 				display.sleep();
 			}
 		}
+	}
+	
+	private void registerLogic() {
+		String username = usernameInput.getText();
+		String password = passwordInput.getText();
+		String confirmPassword = confirmPasswordInput.getText();
+		File userFile = new File(USER_FILE_NAME);
+		try {
+			userFile.createNewFile();
+			Scanner sc = new Scanner(userFile);
+			Boolean duplicateUsername = false;
+			if(!(username.isEmpty()) && !(password.isEmpty())) {
+				while(sc.hasNextLine()) { //make sure username doesn't already exist
+					String[] userPass = sc.nextLine().split(DELINEATOR);
+					if((userPass[0].equals(usernameInput.getText()))) {
+						duplicateUsername = true;
+					}
+				}
+				if(!duplicateUsername && 
+						!username.contains(DELINEATOR) && //user can't have space
+						!password.contains(DELINEATOR) && //password can't have space
+						confirmPassword.equals(password)) { //password and confirm password are the same
+					FileWriter fw = new FileWriter(USER_FILE_NAME, true);
+					fw.write("\n");
+					fw.write(username);
+					fw.write(DELINEATOR);
+					fw.write(password);
+					fw.close();
+					System.out.println("Register Successful");
+					shell.close();
+				}
+				else {
+					txtErrorCheckIf.setVisible(true);
+				}
+			}
+			else {
+				txtErrorCheckIf.setVisible(true);
+			}
+			sc.close();
+		}
+		catch(FileNotFoundException eRegister) {
+			eRegister.printStackTrace();
+		}
+		catch(IOException eRegisterWrite) {
+			eRegisterWrite.printStackTrace();
+		};
 	}
 
 	/**
@@ -70,59 +117,30 @@ public class RegisterWindow {
 		lblConfirmPassword.setText("Confirm Password");
 		
 		confirmPasswordInput = new Text(shell, SWT.PASSWORD | SWT.BORDER);
+		confirmPasswordInput.addListener(SWT.Traverse, new Listener() {
+			public void handleEvent(Event e) {
+				if(e.detail == SWT.TRAVERSE_RETURN) {
+					registerLogic();
+				}
+			}
+		});
 		confirmPasswordInput.setBounds(10, 159, 234, 22);
 		
 		
 		Button btnRegister = new Button(shell, SWT.NONE);
 		btnRegister.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				String username = usernameInput.getText();
-				String password = passwordInput.getText();
-				String confirmPassword = confirmPasswordInput.getText();
-				File userFile = new File(USER_FILE_NAME);
-				try {
-					userFile.createNewFile();
-					Scanner sc = new Scanner(userFile);
-					Boolean duplicateUsername = false;
-					if(!(username.isEmpty()) && !(password.isEmpty())) {
-						while(sc.hasNextLine()) { //make sure username doesn't already exist
-							String[] userPass = sc.nextLine().split(DELINEATOR);
-							if((userPass[0].equals(usernameInput.getText()))) {
-								duplicateUsername = true;
-							}
-						}
-						if(!duplicateUsername && 
-								!username.contains(DELINEATOR) && //user can't have space
-								!password.contains(DELINEATOR) && //password can't have space
-								confirmPassword.equals(password)) { //password and confirm password are the same
-							FileWriter fw = new FileWriter(USER_FILE_NAME, true);
-							fw.write("\n");
-							fw.write(username);
-							fw.write(DELINEATOR);
-							fw.write(password);
-							fw.close();
-							System.out.println("Register Successful");
-							shell.close();
-						}
-						else {
-							System.out.println("username already exists or user/pass contains invalid characters");
-						}
-					}
-					else {
-						System.out.println("Username and password fields cannot be blank");
-					}
-					sc.close();
-				}
-				catch(FileNotFoundException eRegister) {
-					eRegister.printStackTrace();
-				}
-				catch(IOException eRegisterWrite) {
-					eRegisterWrite.printStackTrace();
-				};
+				registerLogic();
 			}
 		});
 		btnRegister.setBounds(168, 187, 76, 24);
 		btnRegister.setText("Register");
+		
+		txtErrorCheckIf = new Text(shell, SWT.BORDER | SWT.WRAP);
+		txtErrorCheckIf.setEditable(false);
+		txtErrorCheckIf.setVisible(false);
+		txtErrorCheckIf.setText("Error: Check if passwords are the same and there are no spaces");
+		txtErrorCheckIf.setBounds(10, 187, 152, 64);
 		
 
 	}
